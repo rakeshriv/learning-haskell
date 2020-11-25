@@ -17,7 +17,7 @@ module Lecture01 where
 -- λ> problem1 ['x','y','z']
 -- 'z'
 problem1 :: [a] -> a
-problem1 = undefined
+problem1 a = last a
 
 
 -- Problem 2
@@ -27,7 +27,7 @@ problem1 = undefined
 -- λ> problem2 ['a'..'z']
 -- 'y'
 problem2 :: [a] -> a
-problem2 = undefined
+problem2 a = last (init a)
 
 
 -- Problem 3
@@ -38,7 +38,7 @@ problem2 = undefined
 -- λ> problem3 "haskell" 5
 -- 'e'
 problem3 :: [a] -> Int -> a
-problem3 = undefined
+problem3 a b = last (take b a)
 
 
 -- Problem 4
@@ -49,7 +49,7 @@ problem3 = undefined
 -- λ> problem4 "Hello, world!"
 -- 13
 problem4 :: [a] -> Int
-problem4 = undefined
+problem4 a = sum [1 | x <- a]
 
 
 -- Problem 5
@@ -60,7 +60,8 @@ problem4 = undefined
 -- λ> problem5 [1,2,3,4]
 -- [4,3,2,1]
 problem5 :: [a] -> [a]
-problem5 = undefined
+rev a = if null a then [] else last a: rev (init a)
+problem5 a = rev a
 
 
 -- Problem 6
@@ -74,7 +75,8 @@ problem5 = undefined
 -- λ> problem6 [1,2,4,8,16,8,4,2,1]
 -- True
 problem6 :: Eq a => [a] -> Bool
-problem6 = undefined
+firstLastMatch a = null a || (head a == last a)
+problem6 a = firstLastMatch a && firstLastMatch (tail (init a))
 
 
 -- Problem 7
@@ -106,7 +108,10 @@ problem7 = undefined
 -- λ> problem8 "aaaabccaadeeee"
 -- "abcade"
 problem8 :: Eq a => [a] -> [a]
-problem8 = undefined
+dropConsec a = if length a == 1 then a 
+               else if (head a == head (tail a)) then dropConsec (drop 1 a) 
+               else [head a] ++ dropConsec (tail a)
+problem8 a = dropConsec a
 
 
 -- Problem 9
@@ -189,7 +194,10 @@ problem13 = undefined
 -- λ> problem14 [1, 2, 3]
 -- [1,1,2,2,3,3]
 problem14 :: [a] -> [a]
-problem14 = undefined
+dupItem a = if length a == 1 then b 
+            else b ++ dupItem (tail a) 
+            where b = take 2 (repeat (head a))
+problem14 a = dupItem a
 
 
 -- Problem 15
@@ -199,7 +207,10 @@ problem14 = undefined
 -- λ> problem15 "abc" 3
 -- "aaabbbccc"
 problem15 :: [a] -> Int -> [a]
-problem15 = undefined
+replic a = if length a == 1 then b 
+           else b ++ replic (tail a) 
+           where b = take 3 (repeat (head a))
+problem15 a = replic a
 
 
 -- Problem 16
@@ -209,7 +220,8 @@ problem15 = undefined
 -- λ> problem16 "abcdefghik" 3
 -- "abdeghk"
 problem16 :: [a] -> Int -> [a]
-problem16 = undefined
+dropN n a = if length a < n then a else init (take n a) ++ dropN n (drop n a)
+problem16 a n = dropN n a
 
 
 -- Problem 17
@@ -219,8 +231,8 @@ problem16 = undefined
 -- Example:
 -- λ> problem17 "abcdefghik" 3
 -- ("abc", "defghik")
-problem17 :: [a] -> Int -> ([a], [a])
-problem17 = undefined
+problem17 :: [a] -> Int -> ([a], [a]) 
+problem17 a n = (take n a, drop n a)
 
 
 -- Problem 18
@@ -233,7 +245,7 @@ problem17 = undefined
 -- λ> problem18 ['a','b','c','d','e','f','g','h','i','k'] 3 7
 -- "cdefg"
 problem18 :: [a] -> Int -> Int -> [a]
-problem18 = undefined
+problem18 a x y = take (y-x+1) (drop (x-1) a)
 
 
 -- Problem 19
@@ -247,7 +259,9 @@ problem18 = undefined
 -- λ> problem19 ['a','b','c','d','e','f','g','h'] (-2)
 -- "ghabcdef"
 problem19 :: [a] -> Int -> [a]
-problem19 = undefined
+problem19 a n = if n >= 0 then drop n a ++ take n a 
+                else drop x a ++ take x a 
+                where x = length a - (abs n)
 
 
 -- Problem 20
@@ -257,7 +271,7 @@ problem19 = undefined
 -- λ> problem20 2 "abcd"
 -- ('b',"acd")
 problem20 :: Int -> [a] -> (a, [a])
-problem20 = undefined
+problem20 n xs = [ x | x <- xs, (last (take n xs) /= x) ]
 
 
 -- Problem A
@@ -267,7 +281,11 @@ problem20 = undefined
 -- λ> problemA [1,3,4] [2,5,6]
 -- [1,2,3,4,5,6]
 problemA :: Ord a => [a] -> [a] -> [a]
-problemA = undefined
+merge a b = if null a then b 
+            else if null b then a 
+            else if head a < head b then [head a] ++ merge (tail a) b 
+            else [head b] ++ merge a (tail b)
+problemA a b = merge a b
 
 
 -- Problem B
@@ -278,4 +296,7 @@ problemA = undefined
 -- λ> problemB [4,3,2,1]
 -- [1,2,3,4]
 problemB :: Ord a => [a] -> [a]
-problemB = undefined
+left a = take cnt a where cnt = length a `div` 2
+right a = drop cnt a where cnt = length a `div` 2
+mergesort a = if length a ==1 then a else  merge (mergesort (left a)) (mergesort (right a))
+problemB a = mergesort a
